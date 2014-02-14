@@ -15,6 +15,12 @@ func minMax(first float64, second float64) (float64, float64) {
 }
 
 func main() {
+  // Argument to defer must be a function call. Doesn't need to be a closure,
+	// although here it is.
+  defer func() {
+		fmt.Println("This line should appear last of all.")
+	}()
+
   var message string = "Hello world from Go."
   message2 := "Now with type inference."
 	const message3 = "And constants."
@@ -53,4 +59,14 @@ func main() {
 	min2, max2 := minMax(3.0, 10.0)
 	fmt.Println(min1, max1)
 	fmt.Println(min2, max2)
+
+  // Bound by reference in the closure
+  var xbound = 3
+  closureTest := func(v int) int {
+		return v + xbound
+  }
+
+  fmt.Println("Fn 3, 2", closureTest(2))
+  xbound = 5
+  fmt.Println("Fn 5, 2", closureTest(2))
 }
