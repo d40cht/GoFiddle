@@ -14,6 +14,17 @@ func minMax(first float64, second float64) (float64, float64) {
 	return second, first
 }
 
+type TestStruct struct {
+	x int
+	y float32
+	z float64
+}
+
+// A method on TestStruct
+func (ts *TestStruct)printTestStruct() {
+	fmt.Println("TestStruct:", ts.x, ts.y, ts.z)
+}
+
 func main() {
   // Argument to defer must be a function call. Doesn't need to be a closure,
 	// although here it is.
@@ -69,4 +80,13 @@ func main() {
   fmt.Println("Fn 3, 2", closureTest(2))
   xbound = 5
   fmt.Println("Fn 5, 2", closureTest(2))
+
+
+  // TODO: Pointers, dereference, new etc.
+
+
+
+	ts := TestStruct { 1, 3.0, 7.0 }	
+  fmt.Println( ts.x, ts.y, ts.z )
+  ts.printTestStruct()
 }
