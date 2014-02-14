@@ -20,6 +20,43 @@ type TestStruct struct {
 	z float64
 }
 
+type Shape interface {
+	area() float64
+}
+
+type Square struct {
+	width float64
+}
+
+type Rectangle struct {
+	width float64
+	height float64
+}
+
+// Makes square implement the shape interface
+func (sq *Square) area() float64 {
+	return sq.width * sq.width
+}
+
+// Makes rectangle implement the shape interface
+func (rect *Rectangle) area() float64 {
+	return rect.width * rect.height
+}
+
+func printArea(shp Shape) {
+  fmt.Println("Shape area:", shp.area())
+}
+
+func shapeInterfaceTest() {
+  var s Square = Square {4.0}
+  r := Rectangle {3.0, 2.0}
+
+	// Why, oh why, am I passing a pointer here when the declaration
+	// of printArea looks like it takes a Shape by value?
+	printArea(&s)
+	printArea(&r)
+}
+
 // A method on TestStruct
 func (ts *TestStruct)printTestStruct() {
 	fmt.Println("TestStruct:", ts.x, ts.y, ts.z)
