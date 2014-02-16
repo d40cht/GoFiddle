@@ -126,4 +126,7 @@ func main() {
 	ts := TestStruct { 1, 3.0, 7.0 }	
   fmt.Println( ts.x, ts.y, ts.z )
   ts.printTestStruct()
+
+
+	// Next: concurrency. Goroutines, channels etc.
 }
