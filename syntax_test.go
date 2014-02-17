@@ -1,6 +1,6 @@
 package main
 
-import "fmt"
+//import "fmt"
 import "testing"
 
 func makeHalfAgain(in float64) float64 {
@@ -68,17 +68,19 @@ func (ts *TestStruct) structArith() float64 {
 func TestSyntax(t *testing.T) {
   // Argument to defer must be a function call. Doesn't need to be a closure,
 	// although here it is.
-  defer func() {
+  /*defer func() {
 		fmt.Println("This line should appear last of all.")
-	}()
+	}()*/
 
-  var message string = "Hello world from Go."
-  message2 := "Now with type inference."
-	const message3 = "And constants."
-	fmt.Println(message, message2, message3)
+  var value1 int = 1
+	value2 := 2
+	const value3 = 3
+	if (value1 + value2 + value3) != 6 {
+		t.Error("Simple variable declaration test fail.")
+	}
 
   var zeros [3] int
-  x := [3] int { 6, 7, 8 }
+  x := [3] int { 6, 4, 2 }
 
   // TODO: Slices, although the syntax is horrid
   slice1 := [] int { 1, 3, 5 }
@@ -86,11 +88,17 @@ func TestSyntax(t *testing.T) {
 	slice3 := slice1[0:3]
 
   for i := 0; i < 3; i++ {
-		fmt.Println("Counter is:", i, x[i], zeros[i], slice1[i], slice2[i], slice3[i])
+		if !(zeros[i] == 0.0 && slice2[i] == 0.0 && (x[i] + slice1[i]) == 7 && slice1[i] == slice3[i]) {
+			t.Error("Slices/arrays have unexpected values.")
+		}
 	}
 
+	accumulator := 0.0
   for _, val := range slice3 {
-    fmt.Println("Range loop:", val, makeHalfAgain(float64(val)))
+		accumulator += 2.0*makeHalfAgain(float64(val))
+	}
+	if accumulator != 27.0 {
+		t.Error("Range loop did not calculate expected value.")
 	}
 
   testMap := make(map[string]int)
