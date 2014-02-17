@@ -43,18 +43,20 @@ func (rect *Rectangle) area() float64 {
 	return rect.width * rect.height
 }
 
-func printArea(shp Shape) {
-  fmt.Println("Shape area:", shp.area())
+func checkArea(t *testing.T, shp Shape, area float64) {
+  if shp.area() != area {
+		t.Error("Shape has invalid area:", shp.area(), area)
+	}
 }
 
-func shapeInterfaceTest() {
+func TestShapeInterface(t *testing.T) {
   var s Square = Square {4.0}
   r := Rectangle {3.0, 2.0}
 
 	// Why, oh why, am I passing a pointer here when the declaration
 	// of printArea looks like it takes a Shape by value?
-	printArea(&s)
-	printArea(&r)
+  checkArea(t, &s, 16.0)
+	checkArea(t, &r, 6.0)
 }
 
 // A method on TestStruct, showing the need for explicit casts for
