@@ -1,7 +1,7 @@
 package main
 
 import "fmt"
-
+import "testing"
 
 func makeHalfAgain(in float64) float64 {
 	return in * 1.5
@@ -62,7 +62,7 @@ func (ts *TestStruct)printTestStruct() {
 	fmt.Println("TestStruct:", ts.x, ts.y, ts.z)
 }
 
-func main() {
+func TestSyntax(t *testing.T) {
   // Argument to defer must be a function call. Doesn't need to be a closure,
 	// although here it is.
   defer func() {
@@ -93,20 +93,32 @@ func main() {
   testMap := make(map[string]int)
   testMap["foo"] = 12
   testMap["bar"] = 16
-  delete(testMap, "foo")
-  fmt.Println("Test map size:", len(testMap))
-
-  if count, ok := testMap["bar"]; ok {
-		fmt.Println("Found bar in your map sir: %d.", count)
+	if len(testMap) != 2 {
+		t.Error("Test map has unexpected size:", len(testMap))
+  }
+	delete(testMap, "foo")
+	if len(testMap) != 1 {
+		t.Error("Test map has unexpected size:", len(testMap))
+	}
+	
+	count, ok := testMap["bar"]
+  if !ok {
+		t.Error("Could not find 'bar' in testMap")
+	}
+	if count != 16 {
+		t.Error("Key 'bar' had unexpected value association")
 	}
 
   prefilledMap := map[string]string { "foo" : "bar", "baz" : "qux" }
-  fmt.Println("Length of prefilled map:", len(prefilledMap))
+  if len(prefilledMap) != 2 {
+    t.Error("Unexpected prefilled map length")
+	}
 
   min1, max1 := minMax(10.0, 3.0) 
 	min2, max2 := minMax(3.0, 10.0)
-	fmt.Println(min1, max1)
-	fmt.Println(min2, max2)
+  if !(min1 == 3.0 && min2 == 3.0 && max1 == 10.0 && max2 == 10.0) {
+		t.Error("minMax function returned incorrect values")
+	}
 
   // Bound by reference in the closure
   var xbound = 3
@@ -114,10 +126,13 @@ func main() {
 		return v + xbound
   }
 
-  fmt.Println("Fn 3, 2", closureTest(2))
+	if closureTest(2) != 5 {
+		t.Error("Error in closure test")
+	}
   xbound = 5
-  fmt.Println("Fn 5, 2", closureTest(2))
-
+  if closureTest(2) != 7 {
+		t.Error("Unexpected behaviour of closure-captured variables")
+	}
 
   // TODO: Pointers, dereference, new etc.
 
