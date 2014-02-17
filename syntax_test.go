@@ -57,9 +57,10 @@ func shapeInterfaceTest() {
 	printArea(&r)
 }
 
-// A method on TestStruct
-func (ts *TestStruct)printTestStruct() {
-	fmt.Println("TestStruct:", ts.x, ts.y, ts.z)
+// A method on TestStruct, showing the need for explicit casts for
+// mixed-type arithmetic operations in Go.
+func (ts *TestStruct) structArith() float64 {
+	return float64(ts.x) * float64(ts.y) + ts.z
 }
 
 func TestSyntax(t *testing.T) {
@@ -139,8 +140,12 @@ func TestSyntax(t *testing.T) {
 
 
 	ts := TestStruct { 1, 3.0, 7.0 }	
-  fmt.Println( ts.x, ts.y, ts.z )
-  ts.printTestStruct()
+  if !(ts.x == 1 && ts.y == 3.0 && ts.z == 7.0) {
+		t.Error("Incorrect struct assignment.")
+	}
+  if ts.structArith() != 10.0 {
+		t.Error("Incorrect struct arithmetic function")
+	}
 
 
 	// Next: concurrency. Goroutines, channels etc.
