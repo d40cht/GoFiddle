@@ -1,7 +1,7 @@
 package main
 
 import (
-  "fmt"
+  //"fmt"
   "testing"
   "time"
   "math/rand"
@@ -9,22 +9,47 @@ import (
 
 
 func TestGoRoutinesAndChannels(t *testing.T) {
+  const numGoRoutines = 10
+
   var readyChan chan int = make(chan int)
 
+  // Variables pointing to the channel, but with restricted access, respectively
+  // receive only and send only.
+  var receiverChanVar <- chan int = readyChan
+  var senderChanVar chan <- int = readyChan
+
+  // The function we wish to run concurrent instances of. A simple sleep
+  // followed by a channel send.
   concFn := func(index int) {
-    amt := time.Duration(rand.Intn(2000))
+    amt := time.Duration(rand.Intn(100))
     time.Sleep(time.Millisecond * amt)
-    readyChan <- index
+    senderChanVar <- index
   }
 
-  for i := 0; i < 10; i++ {
+  // Unlease the go routines.
+  for i := 0; i < numGoRoutines; i++ {
     go concFn(i)
   }
 
-  for i := 0; i < 10; i++ {
-    finishedIndex := <- readyChan
-    fmt.Println("Received: ", i, finishedIndex)
+  // Await their missives
+  checkedInRoutines := make(map[int]struct{})
+  for i := 0; i < numGoRoutines; i++ {
+    finishedIndex := <- receiverChanVar
+    checkedInRoutines[finishedIndex] = struct{}{}
   }
+
+  // Ensure we get the communications we expected.
+  for i := 0; i < numGoRoutines; i++ {
+    if _, ok := checkedInRoutines[i]; !ok {
+      t.Error("Missing response from channel:", i)
+    }
+  }
+
+
+  // TODO: Select statement: switch for channels, plus time.After used for timeout
+  // in which the mechanism is a message sent on a new channel after the timeout.
+
+  // TODO: Buffered channels (positive-sized fifos)
 }
 
 func makeHalfAgain(in float64) float64 {
