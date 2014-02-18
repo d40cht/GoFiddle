@@ -1,7 +1,31 @@
 package main
 
-//import "fmt"
-import "testing"
+import (
+  "fmt"
+  "testing"
+  "time"
+  "math/rand"
+)
+
+
+func TestGoRoutinesAndChannels(t *testing.T) {
+  var readyChan chan int = make(chan int)
+
+  concFn := func(index int) {
+    amt := time.Duration(rand.Intn(2000))
+    time.Sleep(time.Millisecond * amt)
+    readyChan <- index
+  }
+
+  for i := 0; i < 10; i++ {
+    go concFn(i)
+  }
+
+  for i := 0; i < 10; i++ {
+    finishedIndex := <- readyChan
+    fmt.Println("Received: ", i, finishedIndex)
+  }
+}
 
 func makeHalfAgain(in float64) float64 {
 	return in * 1.5
@@ -54,7 +78,7 @@ func TestShapeInterface(t *testing.T) {
   r := Rectangle {3.0, 2.0}
 
 	// Why, oh why, am I passing a pointer here when the declaration
-	// of printArea looks like it takes a Shape by value?
+	// of checkArea looks like it takes a Shape by value?
   checkArea(t, &s, 16.0)
 	checkArea(t, &r, 6.0)
 }
@@ -111,7 +135,7 @@ func TestSyntax(t *testing.T) {
 	if len(testMap) != 1 {
 		t.Error("Test map has unexpected size:", len(testMap))
 	}
-	
+
 	count, ok := testMap["bar"]
   if !ok {
 		t.Error("Could not find 'bar' in testMap")
@@ -125,7 +149,7 @@ func TestSyntax(t *testing.T) {
     t.Error("Unexpected prefilled map length")
 	}
 
-  min1, max1 := minMax(10.0, 3.0) 
+  min1, max1 := minMax(10.0, 3.0)
 	min2, max2 := minMax(3.0, 10.0)
   if !(min1 == 3.0 && min2 == 3.0 && max1 == 10.0 && max2 == 10.0) {
 		t.Error("minMax function returned incorrect values")
@@ -147,9 +171,10 @@ func TestSyntax(t *testing.T) {
 
   // TODO: Pointers, dereference, new etc.
 
+  // TODO: Embedded types: Anonymous type field in type, adds the fields and methods
+  // of that anonymous type into the parent type. A lot like inheritance.
 
-
-	ts := TestStruct { 1, 3.0, 7.0 }	
+	ts := TestStruct { 1, 3.0, 7.0 }
   if !(ts.x == 1 && ts.y == 3.0 && ts.z == 7.0) {
 		t.Error("Incorrect struct assignment.")
 	}
