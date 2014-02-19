@@ -7,6 +7,13 @@ import (
   "math/rand"
 )
 
+// NOTE: Without setting runtime.GOMAXPROCS( > 1 ), goroutines are scheduled
+//       on to a single thread and don't get you parallelism.
+
+// Some very good detail in 'Effective Go' (web search)
+// Like: defer, type switch, composite field initialisation by name,
+//       channels of channels (send a reply channel down with a request
+//       on a channel).
 
 func TestGoRoutinesAndChannels(t *testing.T) {
   const numGoRoutines = 10
@@ -31,10 +38,17 @@ func TestGoRoutinesAndChannels(t *testing.T) {
     go concFn(i)
   }
 
-  // Await their missives
+  // Go apparently lacks a set, so this is a map from int to an empty struct
+  // (should take zero bytes) which minimises the memory overhead of using a
+  // map as a set substitute.
   checkedInRoutines := make(map[int]struct{})
+  // Await their missives
   for i := 0; i < numGoRoutines; i++ {
     finishedIndex := <- receiverChanVar
+    // My understanding is that struct{}{} here is a composite literal, parsed as
+    // make a thing of type struct{} and make one of it, with no fields set {}.
+    // The docs say 'they consist of the type of the value followed by a
+    // brace-bound list of composite elements'.
     checkedInRoutines[finishedIndex] = struct{}{}
   }
 
